@@ -67,9 +67,7 @@
       <input type="email" id="email" name="email" required>
 
       <label for="telp">Nomor Telepon</label>
-<input type="text" id="telp" name="telepon" 
-       pattern="[0-9]*" inputmode="numeric" 
-       maxlength="13" placeholder="Masukkan nomor telepon" required>
+      <input type="tel" name="telepon" pattern="[0-12]*" inputmode="numeric" maxlength="13" placeholder="Masukkan nomor telepon" required>
 
       <label for="kelas">Pilih Kelas</label>
       <select id="kelas" name="kelas" required>
@@ -91,22 +89,18 @@
   <!-- AOS JS -->
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-  // Hanya angka saat mengetik
-  document.getElementById('telp').addEventListener('input', function () {
-    this.value = this.value.replace(/[^0-9]/g, '');
-  });
+    AOS.init();
 
-  // Validasi saat submit
-  document.getElementById('daftarForm').addEventListener('submit', function(e) {
-    const telp = document.getElementById('telp').value;
-    const telpPattern = /^08[0-9]{6,11}$/; // Minimal 8 digit, maksimal 13
-    if (!telpPattern.test(telp)) {
-      alert('Nomor telepon harus diawali 08 dan berisi 8-13 digit.');
-      e.preventDefault();
-    }
-  });
-</script>
+    // Validasi nomor telepon
+    document.getElementById('daftarForm').addEventListener('submit', function(e) {
+      const telp = document.getElementById('telp').value;
+      const telpPattern = /^08[0-9]{6,12}$/;
+      if (!telpPattern.test(telp)) {
+        alert('Nomor telepon harus diawali 08.');
+        e.preventDefault();
+      }
+    });
+  </script>
 
 </body>
 </html>
-
