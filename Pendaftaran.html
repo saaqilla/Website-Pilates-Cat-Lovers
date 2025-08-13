@@ -148,20 +148,71 @@
   <script>
     AOS.init({ once:true, duration:900 });
 
-    // Hanya izinkan angka di No. Telepon
-    document.getElementById('telp').addEventListener('input', function () {
-      this.value = this.value.replace(/\D/g, '');
+    const form = document.getElementById('form');
+    const result = document.getElementById('result');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // HTML5 validity check
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      // disable button sementara untuk mencegah submit ganda
+      submitBtn.disabled = true;
+
+      const data = {
+        nama: form.nama.value.trim(),
+        email: form.email.value.trim(),
+        telp: form.telp.value.trim(),
+        kelas: form.kelas.value,
+        tanggal: form.tgl.value,
+        waktu: form.waktu.value,
+        catatan: form.catatan.value.trim(),
+        ref: form.ref.value.trim()
+      };
+
+      // format tanggal ke format yang lebih ramah (jika valid)
+      let tanggalTampil = '-';
+      if (data.tanggal) {
+        const dt = new Date(data.tanggal + 'T00:00:00'); // tambahkan time untuk menghindari offset
+        if (!isNaN(dt)) {
+          tanggalTampil = dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        } else {
+          tanggalTampil = data.tanggal;
+        }
+      }
+
+      const waktuTampil = data.waktu || '-';
+
+      // aman: escape setiap input yang dimasukkan ke innerHTML
+      result.innerHTML = '<div class="success">' +
+        'Terima kasih, <strong>' + escapeHtml(data.nama || '-') + '</strong>! ' +
+        'Pendaftaran Anda untuk <strong>' + escapeHtml(data.kelas || '-') + '</strong> ' +
+        'pada <strong>' + escapeHtml(tanggalTampil) + ' ' + escapeHtml(waktuTampil) + '</strong> telah diterima.' +
+        '</div>';
+
+      // reset form dan fokus
+      form.reset();
+      form.nama.focus();
+
+      // scroll ke atas untuk melihat pesan
+      window.scrollTo({top:0,behavior:'smooth'});
+
+      // re-enable setelah sedikit delay (simulasi selesai)
+      setTimeout(() => { submitBtn.disabled = false; }, 700);
     });
 
-    // Validasi form saat submit
-    document.getElementById('daftarForm').addEventListener('submit', function(e) {
-      const telp = document.getElementById('telp').value;
-      const telpPattern = /^08[0-9]{6,12}$/;
-      if (!telpPattern.test(telp)) {
-        alert('Nomor telepon harus diawali 08 dan berisi 8–14 digit angka.');
-        e.preventDefault();
-      }
-    });
+    function escapeHtml(str){
+      // pastikan string
+      str = String(str === undefined || str === null ? '' : str);
+      return str.replace(/[&<>"'`=\/]/g, function(s) {
+        return '&#' + s.charCodeAt(0) + ';';
+      });
+    }
   </script>
 </body>
 </html>
